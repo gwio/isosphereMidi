@@ -1,0 +1,30 @@
+<Widget>
+    <Kind>4</Kind>
+    <Name>attDist</Name>
+    <Value>140.000000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>attForce</Name>
+    <Value>0.006000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>returnForce</Name>
+    <Value>0.000800000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>friction</Name>
+    <Value>0.970000029</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>MidiDist</Name>
+    <Value>17900.000000000</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>Color</Name>
+    <Value>146.625000000</Value>
+</Widget>
