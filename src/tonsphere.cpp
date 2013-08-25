@@ -46,6 +46,7 @@ Tonsphere::Tonsphere() {
     };
     
     ico_sphere.setMode(OF_PRIMITIVE_TRIANGLES);
+    outerMesh.setMode(OF_PRIMITIVE_TRIANGLES);
     
     
     for (int i = 0; i < 60; i+=3) {
@@ -63,40 +64,40 @@ Tonsphere::Tonsphere() {
 
 void Tonsphere::setNormals(ofMesh* mesh_) {
     
-    //    mesh_->clearNormals();
-    //
-    //    for (int i = 0; i< mesh_->getNumVertices(); i++) {
-    //
-    //        ofVec3f temp = mesh_->getVertex(i);
-    //
-    //        //temp = ofVec3f(0,0,0)+temp;
-    //
-    //        temp.normalize();
-    //
-    //        mesh_->addNormal(temp);
-    //
-    //
-    //
-    //    }
+        mesh_->clearNormals();
     
-    mesh_->clearNormals();
+    for (int i = 0; i< mesh_->getNumVertices(); i++) {
     
-    for (int i = 1; i< mesh_->getNumVertices(); i+=3) {
-        
-        ofVec3f temp = mesh_->getVertex(i);
-        ofVec3f tempA = temp - mesh_->getVertex(i-1) ;
-        ofVec3f tempB = temp - mesh_->getVertex(i+1);
-        
-        temp = tempA.getCrossed(tempB);
-        
-        temp.normalize();
-        
-        mesh_->addNormal(temp);
-        mesh_->addNormal(temp);
-        mesh_->addNormal(temp);
-        
-        
-    }
+            ofVec3f temp = mesh_->getVertex(i);
+    
+           //temp = ofVec3f(0,0,0)+temp;
+    
+            temp.normalize();
+    
+           mesh_->addNormal(temp);
+    
+    
+    
+       }
+    
+//    mesh_->clearNormals();
+//    
+//    for (int i = 1; i< mesh_->getNumVertices(); i+=3) {
+//        
+//        ofVec3f temp = mesh_->getVertex(i);
+//        ofVec3f tempA = temp - mesh_->getVertex(i-1) ;
+//        ofVec3f tempB = temp - mesh_->getVertex(i+1);
+//        
+//        temp = tempA.getCrossed(tempB);
+//        
+//        temp.normalize();
+//        
+//        mesh_->addNormal(temp);
+//        mesh_->addNormal(temp);
+//        mesh_->addNormal(temp);
+//        
+//        
+//    }
     
     
 }
@@ -269,6 +270,8 @@ void Tonsphere::draw() {
     
     ico_sphere.draw();
     
+    outerMesh.drawWireframe();
+    
     //ico_sphere.drawWireframe();
     
     //    for (int i=0; i < ico_sphere.getNumVertices(); i++) {
@@ -286,15 +289,14 @@ void Tonsphere::update() {
     
     
     
-    //    if (ofGetFrameNum()%20 == 0) {
-    //        int ranNum = ofRandom(int(new_vertex.size()));
-    //
-    //        ofVec3f ranVec = new_vertex[ ranNum].vertex;
-    //        ranVec.normalize();
-    //        ranVec *= 10;
-    //
-    //        new_vertex[ranNum].velo += ranVec;
-    //    }
+    if (ofGetFrameNum()%20 == 0) {
+        int ranNum = ofRandom(int(new_vertex.size()));//
+        ofVec3f ranVec = new_vertex[ ranNum].vertex;
+        ranVec.normalize();
+        ranVec *= 10;
+
+        new_vertex[ranNum].velo += ranVec;
+    }
     
     
     
@@ -343,7 +345,6 @@ void Tonsphere::update() {
         new_vertex[i].acc *= 0;
     }
     
-    
     //nacheinander berechnen damit die force änderungen shcon alle drin sind und es keine lücken zwischen den triangles gibt
     for (int i = 0; i < new_index.size(); i++) {
         //create new Mesh
@@ -359,6 +360,27 @@ void Tonsphere::update() {
         
         ico_sphere.addColor(ofColor::fromHsb( color, 142+((new_vertex[new_index[i]].pitch) -71)*7, tempCol));
         
+        
+        ofVec3f sV;
+        ofColor oColor;
+        sV = new_vertex[new_index[i]].vertex;
+        
+        if (lSquare > midiTrigger) {
+            sV*= ofRandom(1.10,1.19);
+            //sV.normalize();
+            //sV*=180;
+            
+            oColor  = ofColor::fromHsb(color, 88, tempCol-20,35 );
+        }else {
+        sV.normalize();
+        sV*=140;
+            
+            
+            
+            oColor = ofColor::fromHsb(color, 111, tempCol-50,0 );
+        }
+        outerMesh.addVertex(sV);
+        outerMesh.addColor(oColor);
         //send midi
         
         sendMidi(&new_vertex[ new_index[i] ], lSquare);
@@ -369,7 +391,8 @@ void Tonsphere::update() {
     
     
     
-    
+   
+    setNormals(&outerMesh);
     setNormals(&ico_sphere);
     
     
@@ -431,6 +454,7 @@ void Tonsphere::addForce(ofVec3f force_) {
 
 void Tonsphere::clearAll() {
     
+    outerMesh.clear();
     ico_sphere.clearVertices();
     ico_sphere.clearNormals();
     ico_sphere.clearColors();

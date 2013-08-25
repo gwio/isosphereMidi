@@ -54,4 +54,5 @@ public:
     float midiTrigger;
     float color;
     
+    //ofIcoSpherePrimitive ball;
 };

@@ -66,13 +66,13 @@ void testApp::setup(){
     light.setSpecularColor(ofColor(120,120,120));
     light.setPosition(0,400,600);
     
-    cam.setDistance(250);
+    cam.setDistance(300);
     
     
     sphere.link_Leap(&simpleHands);
     sphere.link_midi(&midiOut);
     
-}
+   }
 
 //--------------------------------------------------------------
 void testApp::update(){
@@ -171,6 +171,7 @@ void testApp::draw(){
     
     sphere.draw();
     
+    ofSetColor(66,46);
     //ofDisableDepthTest();
     sphere.drawParticle();
     
