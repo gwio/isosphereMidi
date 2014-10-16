@@ -7,7 +7,7 @@
 
 #include "structs.h"
 
-#include "ofxLeapMotion.h"
+#include "ofxLeapMotion2.h"
 
 #include "ofxMidi.h"
 

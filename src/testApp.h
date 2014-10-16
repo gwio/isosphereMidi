@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "tonsphere.h"
 #include "structs.h"
-#include "ofxLeapMotion.h"
+#include "ofxLeapMotion2.h"
 #include "ofxMidi.h"
 #include "ofxUI.h"
 
@@ -53,5 +53,7 @@ public:
     float friction;
     float midiTrigger;
     float color;
+    
+
     
 };
