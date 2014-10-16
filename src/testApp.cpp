@@ -11,6 +11,8 @@ void testApp::setup(){
     midiTrigger = 15000;
     color = 0;
     
+    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+    
     gui = new ofxUICanvas();
     gui->setFontSize(OFX_UI_FONT_LARGE, 8);
     gui->setFontSize(OFX_UI_FONT_MEDIUM, 8);
@@ -90,32 +92,42 @@ void testApp::update(){
 		leap.setMappingY(90, 490, -180, 180);
         leap.setMappingZ(-150, 150, -180, 180);
         
+
+        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+
         for(int i = 0; i < simpleHands.size(); i++){
             
-            for(int j = 0; j < simpleHands[i].fingers.size(); j++){
-                int id = simpleHands[i].fingers[j].id;
+                 for (int f=0; f<5; f++) {
+                     
+                        int id = simpleHands[i].fingers[ fingerTypes[f] ].id;
+                     
+                    // ofPoint mcp = simpleHands[i].fingers[ fingerTypes[f] ].mcp; // metacarpal
+                   //  ofPoint pip = simpleHands[i].fingers[ fingerTypes[f] ].pip; // proximal
+                     //ofPoint dip = simpleHands[i].fingers[ fingerTypes[f] ].dip; // distal
+                     ofPoint pt = simpleHands[i].fingers[ fingerTypes[f] ].tip; // fingertip
                 
-                ofPoint pt = simpleHands[i].fingers[j].pos;
-                
-                cout << simpleHands[i].fingers.size() << "\n";
+                //cout << simpleHands[i].fingers.size() << "\n";
                 //store fingers seen this frame for drawing
                 fingersFound.push_back(id);
-            }
+                 }
+            
         }
     }
     
-    
+    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+
     for (int i = 0; i < simpleHands.size(); i++) {
-        for (int j = 0; j < simpleHands[i].fingers.size(); j++) {
+            for (int f=0; f<5; f++) {
+
             ofPushMatrix();
-            ofVec3f tempPos = simpleHands[i].fingers[j].pos;
+            ofVec3f tempPos = simpleHands[i].fingers[ fingerTypes[f] ].tip;
             ofSetColor(255, 255, 255);
             //ofVertex(simpleHands[i].fingers[j].pos);
             // ofEllipse(tempPos.x, tempPos.y, tempPos.z, 5, 5);
             ofPopMatrix();
             
             
-            ofVec3f finger = simpleHands[i].fingers[j].pos;
+            ofVec3f finger = simpleHands[i].fingers[ fingerTypes[f] ].tip;
             for (int k = 0; k < sphere.new_vertex.size(); k++) {
                 
                 
@@ -144,8 +156,9 @@ void testApp::update(){
                     
                     
                 }
-                
             }
+            
+            
         }
     }
     
@@ -182,15 +195,18 @@ void testApp::draw(){
         ofDrawGrid();
     }
     
-    
+    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+
     
     for (int i = 0; i < simpleHands.size(); i++) {
-        for (int j = 0; j < simpleHands[i].fingers.size(); j++) {
+            for (int f=0; f<5; f++) {
+
             ofPushMatrix();
             ofSetColor(255, 255, 255);
-            ofEllipse(simpleHands[i].fingers[j].pos, 5, 5);
+            ofEllipse(simpleHands[i].fingers[ fingerTypes[f] ].tip , 5, 5);
             ofPopMatrix();
-        }
+            }
+        
     }
     
     
