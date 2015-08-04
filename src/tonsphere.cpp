@@ -64,40 +64,42 @@ Tonsphere::Tonsphere() {
 
 void Tonsphere::setNormals(ofMesh* mesh_) {
     
-        mesh_->clearNormals();
+    mesh_->clearNormals();
     
-    for (int i = 0; i< mesh_->getNumVertices(); i++) {
+    for( int i=0; i < mesh_->getIndices().size(); i+=3 ){
+        const int ia = mesh_->getIndices()[i];
+        const int ib = mesh_->getIndices()[i+1];
+        const int ic = mesh_->getIndices()[i+2];
+        
+        ofVec3f e1 = mesh_->getVertices()[ia] - mesh_->getVertices()[ib];
+        ofVec3f e2 = mesh_->getVertices()[ic] - mesh_->getVertices()[ib];
+        ofVec3f no = e2.cross( e1 );
+        
+        // depending on your clockwise / winding order, you might want to reverse the e2 / e1 above if your normals are flipped.
+        
+        mesh_->getNormals()[ia] += no;
+        mesh_->getNormals()[ib] += no;
+        mesh_->getNormals()[ic] += no;
+    }
     
-            ofVec3f temp = mesh_->getVertex(i);
-    
-           //temp = ofVec3f(0,0,0)+temp;
-    
-            temp.normalize();
-    
-           mesh_->addNormal(temp);
-    
-    
-    
-       }
-    
-//    mesh_->clearNormals();
-//    
-//    for (int i = 1; i< mesh_->getNumVertices(); i+=3) {
-//        
-//        ofVec3f temp = mesh_->getVertex(i);
-//        ofVec3f tempA = temp - mesh_->getVertex(i-1) ;
-//        ofVec3f tempB = temp - mesh_->getVertex(i+1);
-//        
-//        temp = tempA.getCrossed(tempB);
-//        
-//        temp.normalize();
-//        
-//        mesh_->addNormal(temp);
-//        mesh_->addNormal(temp);
-//        mesh_->addNormal(temp);
-//        
-//        
-//    }
+    //    mesh_->clearNormals();
+    //
+    //    for (int i = 1; i< mesh_->getNumVertices(); i+=3) {
+    //
+    //        ofVec3f temp = mesh_->getVertex(i);
+    //        ofVec3f tempA = temp - mesh_->getVertex(i-1) ;
+    //        ofVec3f tempB = temp - mesh_->getVertex(i+1);
+    //
+    //        temp = tempA.getCrossed(tempB);
+    //
+    //        temp.normalize();
+    //
+    //        mesh_->addNormal(temp);
+    //        mesh_->addNormal(temp);
+    //        mesh_->addNormal(temp);
+    //
+    //
+    //    }
     
     
 }
@@ -196,8 +198,6 @@ void Tonsphere::refine_mesh() {
     
     gridCopy = new_vertex;
     
-    
-    
 }
 
 void Tonsphere::check_double(ofVec3f vec_) {
@@ -286,20 +286,15 @@ void Tonsphere::draw() {
 
 void Tonsphere::update() {
     
-    
-    
-    
+    /*
     if (ofGetFrameNum()%20 == 0) {
         int ranNum = ofRandom(int(new_vertex.size()));//
         ofVec3f ranVec = new_vertex[ ranNum].vertex;
         ranVec.normalize();
         ranVec *= 10;
-
         new_vertex[ranNum].velo += ranVec;
     }
-    
-    
-    
+   */ 
     
     for (int i = 0; i < new_index.size(); i++) {
         
@@ -333,13 +328,7 @@ void Tonsphere::update() {
         new_vertex[i].velo *= friction;
         
         
-        
         //new_vertex[i].farbe = ofColor::fromHsb(110, 100, 100);
-        
-        
-        
-        
-        
         
         
         new_vertex[i].acc *= 0;
@@ -369,20 +358,18 @@ void Tonsphere::update() {
             sV*= ofRandom(1.10,1.19);
             //sV.normalize();
             //sV*=180;
-            
+
             oColor  = ofColor::fromHsb(color, 88, tempCol-20,35 );
         }else {
-        sV.normalize();
-        sV*=140;
-            
-            
+            sV.normalize();
+            sV*=140;
             
             oColor = ofColor::fromHsb(color, 111, tempCol-50,0 );
         }
         outerMesh.addVertex(sV);
         outerMesh.addColor(oColor);
-        //send midi
         
+        //send midi
         sendMidi(&new_vertex[ new_index[i] ], lSquare);
         
         
@@ -391,12 +378,8 @@ void Tonsphere::update() {
     
     
     
-   
-    setNormals(&outerMesh);
+    //setNormals(&outerMesh);
     setNormals(&ico_sphere);
-    
-    
-    
     
     
     //    for (int i = 0; i < hands->size(); i++) {
@@ -418,34 +401,46 @@ void Tonsphere::update() {
 }
 
 
-void Tonsphere::sendMidi(VertexGrid* vg_, float ls_) {
+ void Tonsphere::sendMidi(VertexGrid* vg_, float ls_) {
+ 
+ if ((!vg_->hover) && (ls_ > midiTrigger)) {
+     static int ps[10] = {0, 2, 4, 7, 9, 12, 14, 16, 19, 21};
     
-    if ((!vg_->hover) && (ls_ > midiTrigger)) {
-        
-        midi->sendNoteOn(vg_->channel, vg_->pitch, 120 );
-        vg_->hover = true;
-        
-        //add Particle
-        //partikel.push_back(Particle(vg_->vertex, &png));
-    }
-    
-    if ((vg_->hover) && (ls_ < midiTrigger)) {
-        
-        midi->sendNoteOff(vg_->channel, vg_->pitch, 120);
-        vg_->hover = false;
-    }
-    
-}
+     
+     // set a parameter that we created when we defined the synth
+     synthPtr->setParameter("midiNumber", 44 + ps[int(ofRandom(0,9))]);
+     synthPtr->setParameter("trigger", 1);
+ //midi->sendNoteOn(vg_->channel, vg_->pitch, 120 );
+ vg_->hover = true;
+ 
+ //add Particle
+ //partikel.push_back(Particle(vg_->vertex, &png));
+ }
+ 
+ if ((vg_->hover) && (ls_ < midiTrigger)) {
+     synthPtr->setParameter("trigger", 0);
+
+// midi->sendNoteOff(vg_->channel, vg_->pitch, 120);
+ vg_->hover = false;
+ }
+ 
+ }
+ 
+ /*
+ void Tonsphere::link_midi(ofxMidiOut *midi_) {
+ midi = midi_;
+ }
+*/
 
 void Tonsphere::link_Leap(vector<ofxLeapMotionSimpleHand>* hand_) {
     
     hands = hand_;
 }
 
-void Tonsphere::link_midi(ofxMidiOut *midi_) {
-    
-    midi = midi_;
+void Tonsphere::link_trigger(Tonic::ofxTonicSynth* synth_) {
+    synthPtr = synth_;
 }
+
 
 void Tonsphere::addForce(ofVec3f force_) {
     

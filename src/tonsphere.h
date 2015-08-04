@@ -1,7 +1,5 @@
 
-
-#ifndef __ton_isosphere__tonsphere__
-#define __ton_isosphere__tonsphere__
+#pragma once
 
 #include "ofMain.h"
 
@@ -9,11 +7,11 @@
 
 #include "ofxLeapMotion2.h"
 
-#include "ofxMidi.h"
+//#include "ofxMidi.h"
 
 #include "particle.h"
 
-
+#include "ofxTonic.h"
 
 class Tonsphere {
   
@@ -45,7 +43,7 @@ public:
 
     void link_Leap(vector<ofxLeapMotionSimpleHand>* hand_);
     
-    void link_midi(ofxMidiOut* midi);
+    //void link_midi(ofxMidiOut* midi);
     
     float mass;
     
@@ -53,7 +51,11 @@ public:
     
     void clearAll();
     
-    ofxMidiOut* midi;
+    // ofxMidiOut* midi;
+    
+    Tonic::ofxTonicSynth* synthPtr;
+    
+    void link_trigger(Tonic::ofxTonicSynth* );
     
     void sendMidi(VertexGrid*, float);
     
@@ -80,4 +82,3 @@ public:
 
 
 
-#endif /* defined(__ton_isosphere__tonsphere__) */

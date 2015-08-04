@@ -1,13 +1,4 @@
-//
-//  structs.h
-//  ton_isosphere
-//
-//  Created by Christian Gwiozda on 19.08.13.
-//
-//
-
-#ifndef ton_isosphere_structs_h
-#define ton_isosphere_structs_h
+#pragma once
 
 #include "ofMain.h"
 
@@ -38,4 +29,3 @@ struct VertexGrid {
 };
 
 
-#endif
