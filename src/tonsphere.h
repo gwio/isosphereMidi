@@ -73,6 +73,9 @@ public:
     float midiTrigger;
     
     float color;
+    
+    ofMesh outerMesh;
+    
 };
 
 
