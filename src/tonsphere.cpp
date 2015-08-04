@@ -64,40 +64,40 @@ Tonsphere::Tonsphere() {
 
 void Tonsphere::setNormals(ofMesh* mesh_) {
     
-        mesh_->clearNormals();
+    mesh_->clearNormals();
     
     for (int i = 0; i< mesh_->getNumVertices(); i++) {
+        
+        ofVec3f temp = mesh_->getVertex(i);
+        
+        //temp = ofVec3f(0,0,0)+temp;
+        
+        temp.normalize();
+        
+        mesh_->addNormal(temp);
+        
+        
+        
+    }
     
-            ofVec3f temp = mesh_->getVertex(i);
-    
-           //temp = ofVec3f(0,0,0)+temp;
-    
-            temp.normalize();
-    
-           mesh_->addNormal(temp);
-    
-    
-    
-       }
-    
-//    mesh_->clearNormals();
-//    
-//    for (int i = 1; i< mesh_->getNumVertices(); i+=3) {
-//        
-//        ofVec3f temp = mesh_->getVertex(i);
-//        ofVec3f tempA = temp - mesh_->getVertex(i-1) ;
-//        ofVec3f tempB = temp - mesh_->getVertex(i+1);
-//        
-//        temp = tempA.getCrossed(tempB);
-//        
-//        temp.normalize();
-//        
-//        mesh_->addNormal(temp);
-//        mesh_->addNormal(temp);
-//        mesh_->addNormal(temp);
-//        
-//        
-//    }
+    //    mesh_->clearNormals();
+    //
+    //    for (int i = 1; i< mesh_->getNumVertices(); i+=3) {
+    //
+    //        ofVec3f temp = mesh_->getVertex(i);
+    //        ofVec3f tempA = temp - mesh_->getVertex(i-1) ;
+    //        ofVec3f tempB = temp - mesh_->getVertex(i+1);
+    //
+    //        temp = tempA.getCrossed(tempB);
+    //
+    //        temp.normalize();
+    //
+    //        mesh_->addNormal(temp);
+    //        mesh_->addNormal(temp);
+    //        mesh_->addNormal(temp);
+    //
+    //
+    //    }
     
     
 }
@@ -176,18 +176,11 @@ void Tonsphere::refine_mesh() {
     ico_sphere.clear();
     
     for (int i = 0; i < new_index.size(); i++) {
-        
         ico_sphere.addVertex(new_vertex[ new_index[i] ].vertex );
-        
-        
-        
         ico_sphere.addColor(new_vertex[ new_index[i] ].farbe);
-        
-        
     }
     
     setNormals(&ico_sphere);
-    
     
     //set midichannels for better sound
     for (int i = 0; i < new_vertex.size(); i++) {
@@ -195,15 +188,9 @@ void Tonsphere::refine_mesh() {
     }
     
     gridCopy = new_vertex;
-    
-    
-    
 }
 
 void Tonsphere::check_double(ofVec3f vec_) {
-    
-    // cout << new_vertex.size() << "\n";
-    
     
     bool test;
     VertexGrid temp2;
@@ -230,7 +217,6 @@ void Tonsphere::check_double(ofVec3f vec_) {
             } else {
                 test = false;
             }
-            
         }
         
         
@@ -240,10 +226,7 @@ void Tonsphere::check_double(ofVec3f vec_) {
             temp2.vertex = vec_;
             temp2.vId =new_vertex.size();
         }
-        
     }
-    
-    
     
     
     new_vertex.push_back(temp2);
@@ -262,8 +245,6 @@ void Tonsphere::check_double(ofVec3f vec_) {
 }
 
 void Tonsphere::draw() {
-    
-    
     
     //ico_sphere.draw();
     //ofSetColor(255, 255, 255);
@@ -286,20 +267,16 @@ void Tonsphere::draw() {
 
 void Tonsphere::update() {
     
-    
-    
-    
-    if (ofGetFrameNum()%20 == 0) {
-        int ranNum = ofRandom(int(new_vertex.size()));//
-        ofVec3f ranVec = new_vertex[ ranNum].vertex;
-        ranVec.normalize();
-        ranVec *= 10;
-
-        new_vertex[ranNum].velo += ranVec;
-    }
-    
-    
-    
+    /*
+     if (ofGetFrameNum()%20 == 0) {
+     int ranNum = ofRandom(int(new_vertex.size()));//
+     ofVec3f ranVec = new_vertex[ ranNum].vertex;
+     ranVec.normalize();
+     ranVec *= 10;
+     
+     new_vertex[ranNum].velo += ranVec;
+     }
+     */
     
     for (int i = 0; i < new_index.size(); i++) {
         
@@ -329,18 +306,9 @@ void Tonsphere::update() {
         
         new_vertex[i].vertex += new_vertex[i].velo;
         
-        
         new_vertex[i].velo *= friction;
         
-        
-        
         //new_vertex[i].farbe = ofColor::fromHsb(110, 100, 100);
-        
-        
-        
-        
-        
-        
         
         new_vertex[i].acc *= 0;
     }
@@ -372,9 +340,8 @@ void Tonsphere::update() {
             
             oColor  = ofColor::fromHsb(color, 88, tempCol-20,35 );
         }else {
-        sV.normalize();
-        sV*=140;
-            
+            sV.normalize();
+            sV*=140;
             
             
             oColor = ofColor::fromHsb(color, 111, tempCol-50,0 );
@@ -385,19 +352,10 @@ void Tonsphere::update() {
         
         sendMidi(&new_vertex[ new_index[i] ], lSquare);
         
-        
-        
     }
     
-    
-    
-   
     setNormals(&outerMesh);
     setNormals(&ico_sphere);
-    
-    
-    
-    
     
     //    for (int i = 0; i < hands->size(); i++) {
     //        for (int j = 0; j < hands->at(i).fingers.size(); j++) {
@@ -412,7 +370,6 @@ void Tonsphere::update() {
     //            }
     //        }
     //    }
-    
     
     
 }
