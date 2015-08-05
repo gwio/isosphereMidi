@@ -74,7 +74,7 @@ void ofApp::setup(){
     sphere.link_Leap(&simpleHands);
     sphere.link_midi(&midiOut);
     
-   }
+}
 
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -89,36 +89,39 @@ void ofApp::update(){
     if( leap.isFrameNew() && simpleHands.size() ){
         
         leap.setMappingX(-230, 230, -180, 180);
-		leap.setMappingY(90, 490, -180, 180);
+        leap.setMappingY(90, 490, -180, 180);
         leap.setMappingZ(-150, 150, -180, 180);
         
-
-        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
-
+        
+        //        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+        fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE};
+        
+        
         for(int i = 0; i < simpleHands.size(); i++){
             
-                 for (int f=0; f<5; f++) {
-                     
-                        int id = simpleHands[i].fingers[ fingerTypes[f] ].id;
-                     
-                    // ofPoint mcp = simpleHands[i].fingers[ fingerTypes[f] ].mcp; // metacarpal
-                   //  ofPoint pip = simpleHands[i].fingers[ fingerTypes[f] ].pip; // proximal
-                     //ofPoint dip = simpleHands[i].fingers[ fingerTypes[f] ].dip; // distal
-                     ofPoint pt = simpleHands[i].fingers[ fingerTypes[f] ].tip; // fingertip
+            for (int f=0; f<3; f++) {
+                
+                int id = simpleHands[i].fingers[ fingerTypes[f] ].id;
+                
+                // ofPoint mcp = simpleHands[i].fingers[ fingerTypes[f] ].mcp; // metacarpal
+                //  ofPoint pip = simpleHands[i].fingers[ fingerTypes[f] ].pip; // proximal
+                //ofPoint dip = simpleHands[i].fingers[ fingerTypes[f] ].dip; // distal
+                ofPoint pt = simpleHands[i].fingers[ fingerTypes[f] ].tip; // fingertip
                 
                 //cout << simpleHands[i].fingers.size() << "\n";
                 //store fingers seen this frame for drawing
                 fingersFound.push_back(id);
-                 }
+            }
             
         }
     }
     
-    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
-
+    //fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE};
+    
     for (int i = 0; i < simpleHands.size(); i++) {
-            for (int f=0; f<5; f++) {
-
+        for (int f=0; f<3; f++) {
+            
             ofPushMatrix();
             ofVec3f tempPos = simpleHands[i].fingers[ fingerTypes[f] ].tip;
             ofSetColor(255, 255, 255);
@@ -135,14 +138,7 @@ void ofApp::update(){
                 dir = finger - sphere.new_vertex[k].vertex;
                 
                 float dist = dir.length();
-                
-                
-                
-                // cout << dist << "\n";
-                
-                
-                
-                
+              
                 if (dist < attDist) {
                     
                     //ofEllipse(sphere.new_vertex[k].vertex,6,6);
@@ -150,15 +146,8 @@ void ofApp::update(){
                     float force = (attDist -  dist) *attForce;
                     dir*= force;
                     sphere.new_vertex[k].acc += dir;
-                    
-                    
-                    
-                    
-                    
                 }
             }
-            
-            
         }
     }
     
@@ -175,9 +164,7 @@ void ofApp::draw(){
     cam.begin();
     ofEnableLighting();
     light.enable();
-    material.begin();
-    
-    
+    //material.begin();
     ofPushMatrix();
     //ofRotate(ofGetElapsedTimef()*10, 0.5, 1, 0.5);
     ofEnableDepthTest();
@@ -190,30 +177,28 @@ void ofApp::draw(){
     
     ofPopMatrix();
     
-    
     if (drawGrid) {
         ofDrawGrid();
     }
     
-    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
-
+    //fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE, RING, PINKY};
+    fingerType fingerTypes[] = {THUMB, INDEX, MIDDLE};
+    
     
     for (int i = 0; i < simpleHands.size(); i++) {
-            for (int f=0; f<5; f++) {
-
+        for (int f=0; f<3; f++) {
+            
             ofPushMatrix();
             ofSetColor(255, 255, 255);
             ofEllipse(simpleHands[i].fingers[ fingerTypes[f] ].tip , 5, 5);
             ofPopMatrix();
-            }
-        
+        }
     }
-    
     
     
     cam.end();
     light.disable();
-    material.end();
+    // material.end();
     
     ofDisableDepthTest();
     string fpsStr = "fps: "+ofToString(ofGetFrameRate(), 2);
@@ -243,7 +228,7 @@ void ofApp::keyPressed(int key){
             gui->toggleVisible();
             break;
             
-            case 'f':
+        case 'f':
             ofToggleFullscreen();
             break;
     }
@@ -303,36 +288,36 @@ void ofApp::exit(){
 void ofApp::guiEvent(ofxUIEventArgs &e)
 {
     string name = e.widget->getName();
-	int kind = e.widget->getKind();
-	
-	if(name == "attDist")
-	{
-		ofxUISlider *slider = (ofxUISlider *) e.widget;
-		attDist = slider->getScaledValue();
-	} else if(name == "attForce")
-	{
-		ofxUISlider *slider = (ofxUISlider *) e.widget;
-		attForce = slider->getScaledValue();
-	} else if(name == "returnForce")
-	{
-		ofxUISlider *slider = (ofxUISlider *) e.widget;
-		returnForce = slider->getScaledValue();
+    int kind = e.widget->getKind();
+    
+    if(name == "attDist")
+    {
+        ofxUISlider *slider = (ofxUISlider *) e.widget;
+        attDist = slider->getScaledValue();
+    } else if(name == "attForce")
+    {
+        ofxUISlider *slider = (ofxUISlider *) e.widget;
+        attForce = slider->getScaledValue();
+    } else if(name == "returnForce")
+    {
+        ofxUISlider *slider = (ofxUISlider *) e.widget;
+        returnForce = slider->getScaledValue();
         sphere.returnForce = returnForce;
-	} else if(name == "friction")
-	{
-		ofxUISlider *slider = (ofxUISlider *) e.widget;
-		friction = slider->getScaledValue();
+    } else if(name == "friction")
+    {
+        ofxUISlider *slider = (ofxUISlider *) e.widget;
+        friction = slider->getScaledValue();
         sphere.friction = friction;
-	} else if(name == "MidiDist")
-	{
-		ofxUISlider *slider = (ofxUISlider *) e.widget;
-		midiTrigger = slider->getScaledValue();
+    } else if(name == "MidiDist")
+    {
+        ofxUISlider *slider = (ofxUISlider *) e.widget;
+        midiTrigger = slider->getScaledValue();
         sphere.midiTrigger = midiTrigger;
-	} else if(name == "Color")
-	{
-		ofxUISlider *slider = (ofxUISlider *) e.widget;
-		color = slider->getScaledValue();
+    } else if(name == "Color")
+    {
+        ofxUISlider *slider = (ofxUISlider *) e.widget;
+        color = slider->getScaledValue();
         sphere.color = int(color);
-	}
+    }
 }
 

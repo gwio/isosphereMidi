@@ -1,10 +1,3 @@
-//
-//  tonsphere.cpp
-//  ton_isosphere
-//
-//  Created by Christian Gwiozda on 17.08.13.
-//
-//
 
 #include "tonsphere.h"
 
@@ -58,7 +51,7 @@ Tonsphere::Tonsphere() {
     
     refine_mesh();
     
-    png.loadImage("particle.png");
+    //png.loadImage("particle.png");
     
 }
 
@@ -66,18 +59,20 @@ void Tonsphere::setNormals(ofMesh* mesh_) {
     
     mesh_->clearNormals();
     
-    for (int i = 0; i< mesh_->getNumVertices(); i++) {
+    for( int i=0; i < mesh_->getIndices().size(); i+=3 ){
+        const int ia = mesh_->getIndices()[i];
+        const int ib = mesh_->getIndices()[i+1];
+        const int ic = mesh_->getIndices()[i+2];
         
-        ofVec3f temp = mesh_->getVertex(i);
+        ofVec3f e1 = mesh_->getVertices()[ia] - mesh_->getVertices()[ib];
+        ofVec3f e2 = mesh_->getVertices()[ic] - mesh_->getVertices()[ib];
+        ofVec3f no = e2.cross( e1 );
         
-        //temp = ofVec3f(0,0,0)+temp;
+        // depending on your clockwise / winding order, you might want to reverse the e2 / e1 above if your normals are flipped.
         
-        temp.normalize();
-        
-        mesh_->addNormal(temp);
-        
-        
-        
+        mesh_->getNormals()[ia] += no;
+        mesh_->getNormals()[ib] += no;
+        mesh_->getNormals()[ic] += no;
     }
     
     //    mesh_->clearNormals();
@@ -184,7 +179,16 @@ void Tonsphere::refine_mesh() {
     
     //set midichannels for better sound
     for (int i = 0; i < new_vertex.size(); i++) {
-        new_vertex[i].channel = i%8 ;
+        new_vertex[i].channel = i%8;
+        
+        if (new_vertex[i].channel == 1) {
+            new_vertex[i].note = 39 + new_vertex[i].noteScale;
+        } else if (new_vertex[i].channel == 2) {
+            new_vertex[i].note = 51 + new_vertex[i].noteScale;
+        } else if (new_vertex[i].channel == 3) {
+            new_vertex[i].note = 63 + new_vertex[i].noteScale;
+
+        }
     }
     
     gridCopy = new_vertex;
@@ -320,13 +324,13 @@ void Tonsphere::update() {
         
         //  cout << tempCol << "\n";
         float lSquare = new_vertex[new_index[i]].vertex.lengthSquared();
-        float tempCol = ofMap(lSquare, 8000, 22340, 0, 255);
+        float tempCol = ofMap(lSquare, 5000, 22340, 0, 255);
         
         //color ohne pitch scale
         //  ico_sphere.addColor(ofColor::fromHsb( 270, 222, tempCol));
         //color mit pitch scale
         
-        ico_sphere.addColor(ofColor::fromHsb( color, 142+((new_vertex[new_index[i]].pitch) -71)*7, tempCol));
+        ico_sphere.addColor(ofColor::fromHsb( color, 142+((new_vertex[new_index[i]].noteScale) )*7, tempCol));
         
         
         ofVec3f sV;
@@ -338,13 +342,13 @@ void Tonsphere::update() {
             //sV.normalize();
             //sV*=180;
             
-            oColor  = ofColor::fromHsb(color, 88, tempCol-20,35 );
+            oColor  = ofColor::fromHsb(color, 88, tempCol-20,30 );
         }else {
             sV.normalize();
             sV*=140;
             
             
-            oColor = ofColor::fromHsb(color, 111, tempCol-50,0 );
+            oColor = ofColor::fromHsb(color, 111, tempCol-150,0 );
         }
         outerMesh.addVertex(sV);
         outerMesh.addColor(oColor);
@@ -379,7 +383,9 @@ void Tonsphere::sendMidi(VertexGrid* vg_, float ls_) {
     
     if ((!vg_->hover) && (ls_ > midiTrigger)) {
         
-        midi->sendNoteOn(vg_->channel, vg_->pitch, 120 );
+        
+        //cout << ls_ << endl;
+        midi->sendNoteOn(vg_->channel, vg_->note, ofMap(ls_, midiTrigger, midiTrigger+1000, 0, ofMap(ls_, midiTrigger, midiTrigger+1000, 0, 127)) );
         vg_->hover = true;
         
         //add Particle
@@ -388,7 +394,7 @@ void Tonsphere::sendMidi(VertexGrid* vg_, float ls_) {
     
     if ((vg_->hover) && (ls_ < midiTrigger)) {
         
-        midi->sendNoteOff(vg_->channel, vg_->pitch, 120);
+        midi->sendNoteOff(vg_->channel, vg_->note, 120);
         vg_->hover = false;
     }
     

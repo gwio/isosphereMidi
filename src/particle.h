@@ -1,13 +1,4 @@
-//
-//  particle.h
-//  ton_isosphere
-//
-//  Created by Christian Gwiozda on 23.08.13.
-//
-//
-
-#ifndef __ton_isosphere__particle__
-#define __ton_isosphere__particle__
+#pragma once
 
 #include "ofMain.h"
 
@@ -32,4 +23,3 @@ public:
     
     
 };
-#endif /* defined(__ton_isosphere__particle__) */

@@ -1,7 +1,6 @@
 
 
-#ifndef __ton_isosphere__tonsphere__
-#define __ton_isosphere__tonsphere__
+#pragma once
 
 #include "ofMain.h"
 
@@ -80,4 +79,3 @@ public:
 
 
 
-#endif /* defined(__ton_isosphere__tonsphere__) */
